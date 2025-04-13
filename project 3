@@ -1,0 +1,61 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load dataset
+df = pd.read_csv('netflix_titles.csv')
+
+# Show basic info
+print("First 5 rows:")
+print(df.head())
+
+print("\nData Info:")
+print(df.info())
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# Drop rows with missing 'Country' and 'Release Year'
+df.dropna(subset=['country', 'release_year'], inplace=True)
+
+# Count of Movies vs TV Shows
+plt.figure(figsize=(6,4))
+df['type'].value_counts().plot(kind='bar', color=['purple', 'orange'])
+plt.title('Count of Movies vs TV Shows on Netflix')
+plt.ylabel('Count')
+plt.tight_layout()
+plt.show()
+
+# Top 10 countries with most content
+top_countries = df['country'].value_counts().head(10)
+top_countries.plot(kind='barh', color='teal')
+plt.title('Top 10 Countries with Most Netflix Content')
+plt.xlabel('Number of Titles')
+plt.gca().invert_yaxis()
+plt.tight_layout()
+plt.show()
+
+# Content added over the years
+df['date_added'] = pd.to_datetime(df['date_added'])
+df['year_added'] = df['date_added'].dt.year
+yearly_content = df['year_added'].value_counts().sort_index()
+
+plt.figure(figsize=(10,5))
+yearly_content.plot(kind='bar', color='steelblue')
+plt.title('Content Added to Netflix Over the Years')
+plt.xlabel('Year')
+plt.ylabel('Number of Titles')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Genre frequency (from 'listed_in' column)
+genres = df['listed_in'].str.split(', ', expand=True).stack().value_counts().head(10)
+
+plt.figure(figsize=(8,5))
+genres.plot(kind='bar', color='coral')
+plt.title('Top 10 Most Common Genres on Netflix')
+plt.ylabel('Frequency')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
